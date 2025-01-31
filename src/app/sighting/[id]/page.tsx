@@ -7,14 +7,11 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function SightingPage({ params }: PageProps) {
+export default async function SightingPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   console.log('Fetching sighting with ID:', params.id);
 
   try {
