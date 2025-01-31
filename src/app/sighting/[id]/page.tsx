@@ -8,23 +8,25 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-type PageParams = {
-  id: string;
-}
-
-type Props = {
-  params: PageParams;
+interface GenerateMetadataProps {
+  params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: GenerateMetadataProps
+): Promise<Metadata> {
   return {
     title: `Sighting ${params.id}`,
   };
 }
 
-export default async function SightingPage(props: Props) {
-  const { params } = props;
+interface PageProps {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function SightingPage({ params }: PageProps) {
   console.log('Fetching sighting with ID:', params.id);
 
   try {
