@@ -2,9 +2,11 @@ services:
   - type: web
     name: ice-site
     env: node
-    buildCommand: NEXT_DISABLE_ESLINT=1 npm install && npm run build
-    startCommand: npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: "3000"
     autoDeploy: true 
