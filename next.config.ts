@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   output: 'standalone', // This ensures all necessary dependencies are included
+  poweredByHeader: false,
+  generateEtags: false,
 };
 
 export default nextConfig;

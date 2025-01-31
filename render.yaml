@@ -7,8 +7,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "3000"
       - key: NEXT_PUBLIC_SUPABASE_URL
         sync: false
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -17,9 +15,4 @@ services:
         sync: false
       - key: NEXT_PUBLIC_IMGUR_CLIENT_SECRET
         sync: false
-    routes:
-      - type: rewrite
-        source: /(.*) # Match all paths
-        destination: /
-    staticPublishPath: .next
     autoDeploy: true 
