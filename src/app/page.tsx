@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import Map from '@/components/Map';
+import dynamic from 'next/dynamic';
 import SightingForm from '@/components/SightingForm';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 export default function Home() {
   const [pins, setPins] = useState<Array<any>>([]);
