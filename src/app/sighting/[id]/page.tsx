@@ -1,17 +1,30 @@
 import { createClient } from '@supabase/supabase-js';
 import SightingDetails from './SightingDetails';
 import { Sighting } from '@/types/sighting';
+import { Metadata } from 'next';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default async function SightingPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+type PageParams = {
+  id: string;
+}
+
+type Props = {
+  params: PageParams;
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return {
+    title: `Sighting ${params.id}`,
+  };
+}
+
+export default async function SightingPage(props: Props) {
+  const { params } = props;
   console.log('Fetching sighting with ID:', params.id);
 
   try {
