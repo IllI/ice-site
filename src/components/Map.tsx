@@ -250,7 +250,7 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
               }
               onMapClick({ lat: center[0], lng: center[1] });
             }}
-            className={`bg-white rounded-full shadow-lg w-[50px] h-[50px] flex items-center justify-center hover:bg-gray-50 transition-colors ${
+            className={`bg-white rounded-full shadow-lg w-[64px] h-[64px] flex items-center justify-center hover:bg-gray-50 transition-colors ${
               isPlacementMode ? 'bg-blue-500 text-white' : ''
             }`}
             title="Add Sighting / Agregar Avistamiento"
@@ -258,8 +258,8 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
             <Image
               src="/addSiting.png"
               alt="Add Sighting"
-              width={32}
-              height={32}
+              width={40}
+              height={40}
               className="object-contain"
             />
           </button>
