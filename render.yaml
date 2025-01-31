@@ -9,4 +9,17 @@ services:
         value: production
       - key: PORT
         value: "3000"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: NEXT_PUBLIC_IMGUR_CLIENT_ID
+        sync: false
+      - key: NEXT_PUBLIC_IMGUR_CLIENT_SECRET
+        sync: false
+    routes:
+      - type: rewrite
+        source: /(.*) # Match all paths
+        destination: /
+    staticPublishPath: .next
     autoDeploy: true 
