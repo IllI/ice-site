@@ -18,17 +18,21 @@ const searchBarStyles = `
     left: auto !important;
     transform: none !important;
     z-index: 1000;
-    display: flex;
-    align-items: center;
+  }
+  .leaflet-control-geosearch form {
+    position: relative;
+  }
+  .leaflet-control-geosearch form .results {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    margin-top: 8px !important;
     background: white;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 4px;
-  }
-  .leaflet-control-geosearch form {
-    display: flex;
-    align-items: center;
-    margin: 0;
+    z-index: 1000;
   }
   .leaflet-control-geosearch form input {
     padding: 8px 12px;
@@ -36,9 +40,6 @@ const searchBarStyles = `
     border-radius: 4px;
     outline: none;
     width: 200px;
-  }
-  .leaflet-control-geosearch form .results {
-    margin-top: 4px;
   }
   .leaflet-control-geosearch .search-logo {
     width: 30px;
