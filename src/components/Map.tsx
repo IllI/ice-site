@@ -5,6 +5,49 @@ import 'leaflet/dist/leaflet.css';
 import Image from 'next/image';
 import MapLegend from './MapLegend';
 import LayerControl from './LayerControl';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import 'leaflet-geosearch/dist/geosearch.css';
+import ReactDOM from 'react-dom/client';
+
+// Add custom CSS to style the search bar and logo
+const searchBarStyles = `
+  .leaflet-control-geosearch.leaflet-bar {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    left: auto !important;
+    transform: none !important;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 4px;
+  }
+  .leaflet-control-geosearch form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+  .leaflet-control-geosearch form input {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    width: 200px;
+  }
+  .leaflet-control-geosearch form .results {
+    margin-top: 4px;
+  }
+  .leaflet-control-geosearch .search-logo {
+    width: 30px;
+    height: 30px;
+    margin-left: 8px;
+    border-radius: 4px;
+    object-fit: contain;
+  }
+`;
 
 interface MapProps {
   center: [number, number];
@@ -50,6 +93,11 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
 
   useEffect(() => {
     if (!mapRef.current) {
+      // Add custom styles
+      const style = document.createElement('style');
+      style.textContent = searchBarStyles;
+      document.head.appendChild(style);
+
       const map = L.map('map', {
         zoomControl: true
       }).setView(center, 13);
@@ -57,6 +105,20 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
       map.zoomControl?.setPosition('topleft');
       
       mapRef.current = map;
+
+      // Add search control
+      const provider = new OpenStreetMapProvider();
+      const searchControl = new GeoSearchControl({
+        provider,
+        style: 'bar',
+        searchLabel: 'Enter address',
+        autoComplete: true,
+        autoCompleteDelay: 250,
+        showMarker: false,
+        showPopup: false,
+        position: 'topright'
+      });
+      map.addControl(searchControl);
 
       map.on('click', (e) => {
         if (isPlacementMode) {
@@ -172,6 +234,11 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
       <div id="map" className="w-full h-full" />
 
       {/* Map Controls */}
+      <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
+        <img src="/logo.jpg" alt="Logo" className="w-[30px] h-[30px] object-contain" />
+      </div>
+
+      {/* Other Controls */}
       <div className="absolute bottom-4 right-4 z-[1000] flex flex-col gap-2 min-w-[200px]">
         {/* Add Sighting Button */}
         <div className="self-end mb-2">
