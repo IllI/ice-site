@@ -12,6 +12,14 @@ const MARKER_FILES = [
     filename: 'marker-icon-2x.png'
   },
   {
+    url: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    filename: 'marker-icon-blue.png'
+  },
+  {
+    url: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    filename: 'marker-icon-2x-blue.png'
+  },
+  {
     url: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
     filename: 'marker-shadow.png'
   }
