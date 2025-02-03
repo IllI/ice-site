@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/sync-padlet/*.ts": {
+    "src/app/api/sync-padlet/route.ts": {
       "maxDuration": 60
     }
   }
