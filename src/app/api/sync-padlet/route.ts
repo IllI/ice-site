@@ -176,9 +176,24 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Clean old records
-    await cleanOldRecords();
-    console.log('Cleaned old records');
+    // Move records older than 3 days to archive
+    const archiveOldRecords = await supabase.rpc('archive_old_sightings', {
+      days_threshold: 3
+    });
+
+    if (archiveOldRecords.error) {
+      console.error('Error archiving old records:', archiveOldRecords.error);
+    }
+
+    // Clean up any remaining old records that failed to archive
+    const { error: cleanupError } = await supabase
+      .from('sightings')
+      .delete()
+      .lt('time_date', new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString());
+
+    if (cleanupError) {
+      console.error('Error cleaning up old records:', cleanupError);
+    }
 
     // Fetch data from Padlet
     const rawData = await fetchPadletData();
