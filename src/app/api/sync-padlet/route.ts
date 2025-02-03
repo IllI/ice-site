@@ -10,7 +10,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Configuration
 const DAYS_TO_KEEP = 3;
-const BATCH_SIZE = 50; // Process records in smaller batches
+const BATCH_SIZE = 25; // Reduced batch size for faster processing
+const FETCH_TIMEOUT = 10000; // 10 second timeout for Padlet API calls
 const PADLET_CONFIG = {
   baseUrl: 'https://padlet.com/api/10/wishes',
   wallHashId: 'board_YjMXnWQK1VbayND5'
@@ -23,10 +24,16 @@ async function fetchPadletData(pageStart?: string): Promise<any[]> {
       : `${PADLET_CONFIG.baseUrl}?wall_hashid=${PADLET_CONFIG.wallHashId}`;
 
     console.log('Fetching from URL:', url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+    
     const response = await fetch(url, { 
       headers: { 'Accept': 'application/json' },
-      next: { revalidate: 0 } // Disable cache
+      next: { revalidate: 0 },
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch from Padlet: ${response.status} ${response.statusText}`);
@@ -45,8 +52,12 @@ async function fetchPadletData(pageStart?: string): Promise<any[]> {
     }
     
     return allData;
-  } catch (error) {
-    console.error('Error fetching Padlet data:', error);
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('Padlet API call timed out after', FETCH_TIMEOUT, 'ms');
+    } else {
+      console.error('Error fetching Padlet data:', error);
+    }
     throw error;
   }
 }
@@ -96,6 +107,7 @@ async function cleanOldRecords() {
 
 async function processInBatches(items: any[]) {
   let insertedCount = 0;
+  let duplicateCount = 0;
   const batches = [];
   
   for (let i = 0; i < items.length; i += BATCH_SIZE) {
@@ -104,7 +116,8 @@ async function processInBatches(items: any[]) {
   
   console.log(`Processing ${batches.length} batches of ${BATCH_SIZE} items each`);
   
-  for (const batch of batches) {
+  for (const [batchIndex, batch] of batches.entries()) {
+    console.log(`Processing batch ${batchIndex + 1}/${batches.length}`);
     const newItems = [];
     
     for (const item of batch) {
@@ -125,6 +138,8 @@ async function processInBatches(items: any[]) {
 
       if (!existingData) {
         newItems.push(item);
+      } else {
+        duplicateCount++;
       }
     }
     
@@ -139,10 +154,13 @@ async function processInBatches(items: any[]) {
       }
 
       insertedCount += newItems.length;
-      console.log(`Inserted ${newItems.length} items from current batch`);
+      console.log(`Batch ${batchIndex + 1}: Inserted ${newItems.length} items`);
+    } else {
+      console.log(`Batch ${batchIndex + 1}: All items were duplicates`);
     }
   }
   
+  console.log(`Sync summary: ${insertedCount} new items, ${duplicateCount} duplicates`);
   return insertedCount;
 }
 
