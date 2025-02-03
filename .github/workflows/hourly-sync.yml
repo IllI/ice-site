@@ -1,0 +1,24 @@
+name: Hourly Padlet Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Run every hour
+  workflow_dispatch:      # Allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Padlet Sync
+        run: |
+          curl -X GET "https://ice-site-gamma.vercel.app/api/sync-padlet" \
+          -H "Authorization: Bearer ${{ secrets.SYNC_TOKEN }}" \
+          -H "Content-Type: application/json"
+      
+      - name: Check response
+        run: |
+          RESPONSE=$(curl -s -X GET "https://ice-site-gamma.vercel.app/api/sync-padlet" \
+          -H "Authorization: Bearer ${{ secrets.SYNC_TOKEN }}" \
+          -H "Content-Type: application/json")
+          echo "Sync response: $RESPONSE" 
