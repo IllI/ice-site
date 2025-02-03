@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/sync-padlet/*.ts": {
+      "maxDuration": 60
+    }
+  }
+} 
