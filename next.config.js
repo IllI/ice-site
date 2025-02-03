@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   /* config options here */
   reactStrictMode: false, // Disable strict mode to prevent double mounting
   eslint: {
@@ -18,6 +17,15 @@ const nextConfig: NextConfig = {
   output: 'standalone', // This ensures all necessary dependencies are included
   poweredByHeader: false,
   generateEtags: false,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb'
+    }
+  },
+  serverExternalPackages: ['leaflet', 'leaflet-geosearch'],
+  images: {
+    domains: ['tile.openstreetmap.org'],
+  }
 };
 
-export default nextConfig;
+module.exports = nextConfig;
