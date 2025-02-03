@@ -48,12 +48,15 @@ const searchBarStyles = `
     border-radius: 4px;
     object-fit: contain;
   }
+  .placement-mode-cursor {
+    cursor: url('/addSiting.png') 16 16, crosshair !important;
+  }
 `;
 
 interface MapProps {
   center: [number, number];
   pins: Array<any>;
-  onMapClick: (latlng: { lat: number; lng: number }) => void;
+  onMapClick: (latlng: { lat: number; lng: number; } | null) => void;
   isPlacementMode: boolean;
 }
 
@@ -94,8 +97,29 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
 
   // Add sighting button click handler
   const handleAddSightingClick = () => {
-    onMapClick({ lat: center[0], lng: center[1] });
+    if (isPlacementMode) {
+      // If already in placement mode, exit it
+      onMapClick(null);
+    } else {
+      // Enter placement mode
+      onMapClick({ lat: center[0], lng: center[1] });
+    }
   };
+
+  // Add keyboard event listener for Escape key
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isPlacementMode) {
+        onMapClick(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isPlacementMode, onMapClick]);
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -225,7 +249,7 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
 
   return (
     <div className="relative w-full h-full">
-      <div id="map" className="w-full h-full" />
+      <div id="map" className={`w-full h-full ${isPlacementMode ? 'placement-mode-cursor' : ''}`} />
 
       {/* Map Controls */}
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
