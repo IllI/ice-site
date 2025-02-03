@@ -251,6 +251,13 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
     <div className="relative w-full h-full">
       <div id="map" className={`w-full h-full ${isPlacementMode ? 'placement-mode-cursor' : ''}`} />
 
+      {/* Info Bar */}
+      {isPlacementMode && (
+        <div className="absolute top-16 left-0 right-0 bg-blue-500 text-white py-2 text-center z-[1000] shadow-md">
+          <p className="text-lg">Click where to add a marker / Haga clic donde agregar un marcador</p>
+        </div>
+      )}
+
       {/* Map Controls */}
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
         <img src="/logo.jpg" alt="Logo" className="w-[30px] h-[30px] object-contain" />
