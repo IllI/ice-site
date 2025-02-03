@@ -92,6 +92,11 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
     className: 'marker-icon'
   });
 
+  // Add sighting button click handler
+  const handleAddSightingClick = () => {
+    onMapClick({ lat: center[0], lng: center[1] });
+  };
+
   useEffect(() => {
     if (!mapRef.current) {
       // Add custom styles
@@ -121,28 +126,14 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
       });
       map.addControl(searchControl);
 
+      // Update the map layer
+      L.tileLayer(getTileLayer(mapStyle)).addTo(map);
+
       map.on('click', (e) => {
         if (isPlacementMode) {
-          if (tempMarker) {
-            tempMarker.setLatLng(e.latlng);
-          } else {
-            const newMarker = L.marker(e.latlng, {
-              icon: redHatIcon,
-              draggable: true,
-            }).addTo(map);
-            setTempMarker(newMarker);
-            
-            newMarker.on('dragend', () => {
-              const pos = newMarker.getLatLng();
-              onMapClick({ lat: pos.lat, lng: pos.lng });
-            });
-          }
           onMapClick(e.latlng);
         }
       });
-
-      // Update the map layer
-      L.tileLayer(getTileLayer(mapStyle)).addTo(map);
     }
 
     return () => {
@@ -151,21 +142,23 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
         mapRef.current = null;
       }
     };
-  }, [center, isPlacementMode, onMapClick, mapStyle]);
+  }, [center, mapStyle, isPlacementMode, onMapClick]);
 
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Clear existing markers
-    mapRef.current.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
-        layer.remove();
-      }
-    });
+    // Clear existing markers first, but only if not in placement mode
+    if (!isPlacementMode) {
+      mapRef.current.eachLayer((layer) => {
+        if (layer instanceof L.Marker) {
+          layer.remove();
+        }
+      });
+    }
 
     // Add markers based on enabled state
-    pins.forEach(pin => {
-      const timeDiff = Date.now() - new Date(pin.time_date).getTime();
+    pins.forEach((pin) => {
+      const timeDiff = Date.now() - (new Date(pin.time_date) as Date).getTime();
       const hoursAgo = timeDiff / (1000 * 60 * 60);
       
       let icon;
@@ -202,7 +195,7 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
         marker.bindPopup(popupContent);
       }
     });
-  }, [pins, enabledMarkers]);
+  }, [pins, enabledMarkers, isPlacementMode]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -244,25 +237,23 @@ export default function Map({ center, pins, onMapClick, isPlacementMode }: MapPr
         {/* Add Sighting Button */}
         <div className="self-end mb-2">
           <button
-            onClick={() => {
-              if (tempMarker) {
-                tempMarker.remove();
-                setTempMarker(null);
-              }
-              onMapClick({ lat: center[0], lng: center[1] });
-            }}
-            className={`bg-white rounded-full shadow-lg w-[64px] h-[64px] flex items-center justify-center hover:bg-gray-50 transition-colors ${
-              isPlacementMode ? 'bg-blue-500 text-white' : ''
+            onClick={handleAddSightingClick}
+            className={`rounded-full shadow-lg w-16 h-16 flex items-center justify-center transition-all ${
+              isPlacementMode 
+                ? 'bg-blue-500 hover:bg-blue-600' 
+                : 'bg-white hover:bg-gray-50'
             }`}
-            title="Add Sighting / Agregar Avistamiento"
+            title={isPlacementMode ? "Click on map to place sighting" : "Add Sighting / Agregar Avistamiento"}
           >
-            <Image
-              src="/addSiting.png"
-              alt="Add Sighting"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
+            <div className="relative w-10 h-10">
+              <Image
+                src="/addSiting.png"
+                alt="Add Sighting"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </button>
         </div>
 
